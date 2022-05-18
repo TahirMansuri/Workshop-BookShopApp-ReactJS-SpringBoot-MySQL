@@ -14,8 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+
 
 @Service
 public class CustomerServiceImpl implements ICustomerService {
@@ -79,7 +81,17 @@ public class CustomerServiceImpl implements ICustomerService {
             customerRepo.delete(customerRegisterEntity);
             return true;
         } else {
-            return false;
+            throw new UserNotFoundException("Customer with Given ID not Found.",HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public List<CustomerRegisterEntity> readAllCustomers() {
+        List<CustomerRegisterEntity> customerRegisterEntityList = customerRepo.findAll();
+        if(customerRegisterEntityList!=null) {
+            return customerRegisterEntityList;
+        }else {
+            throw new UserNotFoundException("No Customer Data Found",HttpStatus.NOT_FOUND);
         }
     }
 }

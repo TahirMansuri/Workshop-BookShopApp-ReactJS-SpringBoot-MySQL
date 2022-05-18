@@ -3,6 +3,8 @@ package com.infogalaxy.workshopbookstoreapp.service;
 import com.infogalaxy.workshopbookstoreapp.dto.CustomerRegisterDTO;
 import com.infogalaxy.workshopbookstoreapp.entity.CustomerRegisterEntity;
 
+import java.util.List;
+
 /***
  * This interface has unimplemented functionalities which are
  * used for registering the Customer to the system and also
@@ -23,4 +25,6 @@ public interface ICustomerService {
     boolean updateCustomer(CustomerRegisterDTO customerRegisterDTO, long id);
 
     boolean deleteCustomer(long id);
+
+    List<CustomerRegisterEntity> readAllCustomers();
 }

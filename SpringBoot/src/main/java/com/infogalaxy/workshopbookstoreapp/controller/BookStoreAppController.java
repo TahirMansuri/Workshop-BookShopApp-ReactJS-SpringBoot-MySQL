@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/bookstoreapp/api")
@@ -64,12 +65,13 @@ public class BookStoreAppController {
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Response> deleteCustomer(@PathVariable long id) {
-        boolean isDeleted = customerService.deleteCustomer(id);
-        if(!isDeleted) {
-            return new ResponseEntity<Response>(new Response("Customer Not Found...!!!",HttpStatus.NOT_FOUND),HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<Response>(new Response("Deleted Successfully!!!",201),HttpStatus.OK);
-        }
+        customerService.deleteCustomer(id);
+        return new ResponseEntity<Response>(new Response("Customer Not Found...!!!",HttpStatus.NOT_FOUND),HttpStatus.NOT_FOUND);
     }
 
+
+    @GetMapping("/read")
+    public ResponseEntity<List<CustomerRegisterEntity>> getAllCustomers() {
+        return new ResponseEntity<List<CustomerRegisterEntity>>(customerService.readAllCustomers(),HttpStatus.OK);
+    }
 }
