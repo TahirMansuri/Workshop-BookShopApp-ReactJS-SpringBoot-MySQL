@@ -36,8 +36,13 @@ public class BookStoreAppController {
         return new ResponseEntity<Response>(new Response("Registered Successfully!!!",201), HttpStatus.CREATED);
     }
 
-//    @PutMapping("/update/{id}")
-//    public ResponseEntity<CustomerRegisterEntity> updateCustomer(@RequestBody CustomerRegisterDTO customerRegisterDTO,@PathVariable long id) {
-//        return new ResponseEntity<>(customerService.updateCustomer(customerRegisterDTO,id),HttpStatus.OK);
-//    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Response> updateCustomer(@RequestBody CustomerRegisterDTO customerRegisterDTO,@PathVariable long id) {
+        boolean isUpdated = customerService.updateCustomer(customerRegisterDTO,id);
+        if(!isUpdated) {
+            return new ResponseEntity<Response>(new Response("Customer Not Found!!!",HttpStatus.NOT_FOUND),HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<Response>(new Response("Updated Successfully!!!",201),HttpStatus.OK);
+        }
+    }
 }

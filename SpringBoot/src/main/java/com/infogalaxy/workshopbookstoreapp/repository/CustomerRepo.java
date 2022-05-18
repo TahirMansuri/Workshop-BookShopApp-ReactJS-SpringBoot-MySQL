@@ -10,4 +10,6 @@ public interface CustomerRepo extends JpaRepository<CustomerRegisterEntity, Long
     Optional<CustomerRegisterEntity> findCustomerRegisterEntityByEmailId(final String emailId);
 
     boolean existsByEmailId( final String emailId );
+
+    CustomerRegisterEntity findById(long id);
 }

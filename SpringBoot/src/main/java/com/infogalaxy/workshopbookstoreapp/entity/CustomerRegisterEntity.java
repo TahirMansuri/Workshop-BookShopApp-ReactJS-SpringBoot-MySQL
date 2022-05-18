@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @Entity
+@Table(name = "customer")
 public class CustomerRegisterEntity {
 
     @Id

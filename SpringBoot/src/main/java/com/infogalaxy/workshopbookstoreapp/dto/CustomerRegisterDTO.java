@@ -14,9 +14,11 @@ import java.time.LocalDate;
 public class CustomerRegisterDTO {
 
     @NotNull(message = "Firstname is Required.")
+
     private String firstName;
 
     @NotNull(message = "Lastname is Required.")
+
     private String lastName;
 
     @NotNull(message = "KYC is Required.")

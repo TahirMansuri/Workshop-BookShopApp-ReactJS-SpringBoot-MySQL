@@ -53,4 +53,22 @@ public class CustomerServiceImpl implements ICustomerService {
         }
         return false;
     }
+
+    @Override
+    public boolean updateCustomer(CustomerRegisterDTO customerRegisterDTO, long id) {
+        CustomerRegisterEntity customerRegisterEntity = new CustomerRegisterEntity();
+        CustomerRegisterEntity fetchCustomer = customerRepo.findById(id);
+        if(fetchCustomer!=null) {
+            BeanUtils.copyProperties(fetchCustomer,customerRegisterEntity);
+            customerRegisterEntity.setUpdateDate(LocalDate.now());
+            customerRegisterEntity.setFirstName(customerRegisterDTO.getFirstName());
+            customerRegisterEntity.setLastName(customerRegisterDTO.getLastName());
+            customerRegisterEntity.setKyc(customerRegisterDTO.getKyc());
+            customerRegisterEntity.setDob(customerRegisterDTO.getDob());
+            customerRepo.save(customerRegisterEntity);
+            jmsUtil.sendMail(fetchCustomer.getEmailId(),"Book Store App profile Updated","Dear "+customerRegisterEntity.getFirstName()+" , Your Profile is Updated Successfully!!!");
+            return true;
+        }
+        return false;
+    }
 }
