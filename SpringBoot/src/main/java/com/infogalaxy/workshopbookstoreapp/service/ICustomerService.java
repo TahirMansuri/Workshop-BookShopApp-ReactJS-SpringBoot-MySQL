@@ -21,4 +21,6 @@ public interface ICustomerService {
     boolean addCustomer(CustomerRegisterDTO customerRegisterDTO);
 
     boolean updateCustomer(CustomerRegisterDTO customerRegisterDTO, long id);
+
+    boolean deleteCustomer(long id);
 }

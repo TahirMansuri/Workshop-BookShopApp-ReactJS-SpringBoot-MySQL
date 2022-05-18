@@ -71,4 +71,15 @@ public class CustomerServiceImpl implements ICustomerService {
         }
         return false;
     }
+
+    @Override
+    public boolean deleteCustomer(long id) {
+        CustomerRegisterEntity customerRegisterEntity = customerRepo.findById(id);
+        if(customerRegisterEntity!=null) {
+            customerRepo.delete(customerRegisterEntity);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
