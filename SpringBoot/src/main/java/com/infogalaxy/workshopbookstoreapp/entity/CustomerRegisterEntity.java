@@ -42,12 +42,17 @@ public class CustomerRegisterEntity {
     private LocalDate registerDate;
     private LocalDate updateDate;
 
+    @NotNull(message = "Username must be provided.")
+    private String username;
+
     @NotNull(message = "Password must be provided.")
     private String password;
 
     @NotNull(message = "Please Enter the EMail ID")
     @Email(message = "Email ID should be of Proper format.")
     private String emailId;
+
+    private String role;
 
     @Column(columnDefinition = "boolean default false")
     private Boolean verify;
@@ -71,7 +76,7 @@ public class CustomerRegisterEntity {
         this.expiryDate = customerRegisterDTO.getExpiryDate();
     }
 
-    public CustomerRegisterEntity(Long id, String firstName, String lastName, String kyc, LocalDate dob, LocalDate registerDate, LocalDate updateDate, String password, String emailId, Boolean verify, String verificationCode,LocalDate purchaseDate, LocalDate expiryDate) {
+    public CustomerRegisterEntity(Long id, String firstName, String lastName, String kyc, LocalDate dob, LocalDate registerDate, LocalDate updateDate, String password, String emailId, String role, Boolean verify, String verificationCode,LocalDate purchaseDate, LocalDate expiryDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -81,6 +86,7 @@ public class CustomerRegisterEntity {
         this.updateDate = updateDate;
         this.password = password;
         this.emailId = emailId;
+        this.role = role;
         this.verify = verify;
         this.verificationCode = verificationCode;
         this.purchaseDate = purchaseDate;
@@ -96,6 +102,7 @@ public class CustomerRegisterEntity {
         this.updateDate = customerRegisterDTO.getUpdateDate();
         this.password = customerRegisterDTO.getPassword();
         this.emailId = customerRegisterDTO.getEmailId();
+        this.role = role;
         //this.verify = customerRegisterDTO.getVerify();
         //this.verificationCode = customerRegisterDTO.getVerificationCode();
         //this.purchaseDate = customerRegisterDTO.getPurchaseDate();

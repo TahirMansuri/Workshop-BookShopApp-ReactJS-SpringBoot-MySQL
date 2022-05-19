@@ -1,6 +1,7 @@
 package com.infogalaxy.workshopbookstoreapp.service;
 
 import com.infogalaxy.workshopbookstoreapp.dto.CustomerRegisterDTO;
+import com.infogalaxy.workshopbookstoreapp.dto.LoginDTO;
 import com.infogalaxy.workshopbookstoreapp.entity.CustomerRegisterEntity;
 
 import java.util.List;
@@ -27,4 +28,8 @@ public interface ICustomerService {
     boolean deleteCustomer(long id);
 
     List<CustomerRegisterEntity> readAllCustomers();
+
+    boolean isVerifiedUser(String token);
+
+    UserLoginInfo login(LoginDTO loginDTO);
 }

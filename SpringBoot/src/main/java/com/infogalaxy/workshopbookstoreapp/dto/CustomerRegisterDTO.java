@@ -35,12 +35,17 @@ public class CustomerRegisterDTO {
     private LocalDate registerDate;
     private LocalDate updateDate;
 
+    @NotNull(message = "Username must be provided.")
+    private String username;
+
     @NotNull(message = "Password must be provided.")
     private String password;
 
     @NotNull(message = "Please Enter the EMail ID")
     @Email(message = "Email ID should be of Proper format.")
     private String emailId;
+
+    private String role;
 
     private Boolean verify;
     private String verificationCode;

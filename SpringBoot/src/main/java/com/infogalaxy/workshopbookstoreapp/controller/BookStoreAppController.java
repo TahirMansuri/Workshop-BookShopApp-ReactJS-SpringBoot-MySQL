@@ -1,9 +1,12 @@
 package com.infogalaxy.workshopbookstoreapp.controller;
 
 import com.infogalaxy.workshopbookstoreapp.dto.CustomerRegisterDTO;
+import com.infogalaxy.workshopbookstoreapp.dto.LoginDTO;
 import com.infogalaxy.workshopbookstoreapp.entity.CustomerRegisterEntity;
+import com.infogalaxy.workshopbookstoreapp.responses.LoginResponse;
 import com.infogalaxy.workshopbookstoreapp.responses.Response;
 import com.infogalaxy.workshopbookstoreapp.service.CustomerServiceImpl;
+import com.infogalaxy.workshopbookstoreapp.service.UserLoginInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,9 +72,26 @@ public class BookStoreAppController {
         return new ResponseEntity<Response>(new Response("Customer Not Found...!!!",HttpStatus.NOT_FOUND),HttpStatus.NOT_FOUND);
     }
 
-
+    /***
+     * API for Accessing Cutomer Data
+     * @return
+     */
     @GetMapping("/read")
     public ResponseEntity<List<CustomerRegisterEntity>> getAllCustomers() {
         return new ResponseEntity<List<CustomerRegisterEntity>>(customerService.readAllCustomers(),HttpStatus.OK);
+    }
+
+    /***
+     * Login API for User Login check
+     * @param loginDTO
+     * @return
+     */
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginDTO loginDTO) {
+        UserLoginInfo userLoginInfo = customerService.login(loginDTO);
+        if(!userLoginInfo.getToken().isEmpty()) {
+            return new ResponseEntity<LoginResponse>(new LoginResponse("Login Successfull!!!!", 201,userLoginInfo),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new LoginResponse("Check Your Mail for Verification", 203, userLoginInfo),HttpStatus.NON_AUTHORITATIVE_INFORMATION);
     }
 }
