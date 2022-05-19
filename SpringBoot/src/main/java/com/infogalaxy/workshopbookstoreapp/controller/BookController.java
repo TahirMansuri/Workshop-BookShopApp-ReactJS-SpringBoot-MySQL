@@ -42,4 +42,14 @@ public class BookController {
         }
         return new ResponseEntity<>(new Response("Sorry... Problem in Adding Book.", 400), HttpStatus.BAD_REQUEST);
     }
+
+    /***
+     *
+     * @param token
+     * @return
+     */
+    @GetMapping("/get")
+    public ResponseEntity<Response> get(@RequestHeader("token") String token) {
+        return new ResponseEntity<Response>(new Response("BookList",HttpStatus.OK,bookService.getAllBooks(token)),HttpStatus.OK);
+    }
 }

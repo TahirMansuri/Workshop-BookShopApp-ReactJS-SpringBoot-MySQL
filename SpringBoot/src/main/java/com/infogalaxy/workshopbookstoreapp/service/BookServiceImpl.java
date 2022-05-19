@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,10 +34,12 @@ public class BookServiceImpl implements IBookService{
     @Autowired
     BookRepo bookRepo;
 
+    //Check for the Admin Authentication by Username
     Optional<UserEntity> getAuthenticateUser(final String token) {
         return userRepo.findUserEntityByUsername(jwtTokenUtil.getUsername(token));
     }
 
+    //Get Admin Data and Check for the Role
     boolean isUserAdmin(final String token) {
         Optional<UserEntity> fetchedUser = getAuthenticateUser(token);
         if(fetchedUser.isPresent()){
@@ -45,6 +48,7 @@ public class BookServiceImpl implements IBookService{
         throw new UserNotFoundException(Util.USER_NOT_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND);
     }
 
+    //If User Token Verified and User Role is Admin then Proceed for Adding Book to Store
     @Override
     public boolean isBookAdded(BookDTO bookDTO, String token) {
         if(isUserAdmin(token)){
@@ -56,5 +60,11 @@ public class BookServiceImpl implements IBookService{
             return true;
         }
         return false;
+    }
+
+    //This function return all the Book Data from Store
+    @Override
+    public List<BookEntity> getAllBooks(String token) {
+        return bookRepo.findAll();
     }
 }
