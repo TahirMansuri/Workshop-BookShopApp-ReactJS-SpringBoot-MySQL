@@ -1,8 +1,9 @@
 package com.infogalaxy.workshopbookstoreapp.service;
 
 import com.infogalaxy.workshopbookstoreapp.dto.BookDTO;
-import com.infogalaxy.workshopbookstoreapp.entity.BookEntity;
+import com.infogalaxy.workshopbookstoreapp.entity.AdminBookEntity;
 import com.infogalaxy.workshopbookstoreapp.entity.UserEntity;
+import com.infogalaxy.workshopbookstoreapp.exception.BookNotFoundException;
 import com.infogalaxy.workshopbookstoreapp.exception.UserNotFoundException;
 import com.infogalaxy.workshopbookstoreapp.repository.BookRepo;
 import com.infogalaxy.workshopbookstoreapp.repository.UserRepo;
@@ -52,7 +53,7 @@ public class BookServiceImpl implements IBookService{
     @Override
     public boolean isBookAdded(BookDTO bookDTO, String token) {
         if(isUserAdmin(token)){
-            BookEntity bookEntity = new BookEntity();
+            AdminBookEntity bookEntity = new AdminBookEntity();
             BeanUtils.copyProperties(bookDTO,bookEntity);
             bookEntity.setBookCode(Util.randomIdGenerator());
             bookEntity.setAddDate(LocalDate.now());
@@ -64,7 +65,22 @@ public class BookServiceImpl implements IBookService{
 
     //This function return all the Book Data from Store
     @Override
-    public List<BookEntity> getAllBooks(String token) {
+    public List<AdminBookEntity> getAllBooks(String token) {
         return bookRepo.findAll();
     }
+
+    @Override
+    public AdminBookEntity getBookById(long bookId) {
+        return bookRepo.findById(bookId).get();
+    }
+
+    Optional<AdminBookEntity> isValidBook(long bookId) throws BookNotFoundException {
+        Optional<AdminBookEntity> fetchBook = bookRepo.findById(bookId);
+        if(fetchBook.isPresent()) {
+            return fetchBook;
+        }
+        throw new BookNotFoundException("Book with Given ID Not Availabel",HttpStatus.NOT_FOUND);
+    }
+
+
 }

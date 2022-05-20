@@ -4,6 +4,7 @@ import com.infogalaxy.workshopbookstoreapp.dto.UserDTO;
 import com.infogalaxy.workshopbookstoreapp.dto.LoginDTO;
 import com.infogalaxy.workshopbookstoreapp.entity.UserEntity;
 import com.infogalaxy.workshopbookstoreapp.exception.InvalidCredentialException;
+import com.infogalaxy.workshopbookstoreapp.exception.UserAuthenticationException;
 import com.infogalaxy.workshopbookstoreapp.exception.UserNotFoundException;
 import com.infogalaxy.workshopbookstoreapp.repository.UserRepo;
 import com.infogalaxy.workshopbookstoreapp.security.JWTTokenUtil;
@@ -24,7 +25,7 @@ import java.util.Optional;
 public class UserServiceImpl implements IUserService {
 
     @Autowired
-    UserRepo customerRepo;
+    UserRepo userRepo;
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
@@ -41,16 +42,16 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public boolean addCustomer(UserDTO userDTO) {
-        if(!customerRepo.existsByEmailId(userDTO.getEmailId())) {
+        if(!userRepo.existsByEmailId(userDTO.getEmailId())) {
             UserEntity userEntity = new UserEntity();
             BeanUtils.copyProperties(userDTO,userEntity);
             userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             userEntity.setVerificationCode(Util.generateOTP());
             userEntity.setRegisterDate(LocalDate.now());
             userEntity.setVerify(false);
-            customerRepo.save(userEntity);
+            userRepo.save(userEntity);
 
-            Optional<UserEntity> fetchCustData = customerRepo.findUserEntityByUsername(userEntity.getUsername());
+            Optional<UserEntity> fetchCustData = userRepo.findUserEntityByUsername(userEntity.getUsername());
             if(fetchCustData.isPresent()) {
                 jmsUtil.sendMail(userDTO.getEmailId(),"Verification Code for Book Store App","Hello "+userDTO.getFirstName()+", Verification Code for Your Book Store App is : "+fetchCustData.get().getVerificationCode()+"");
                 return true;
@@ -63,7 +64,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public boolean updateCustomer(UserDTO userDTO, long id) {
         UserEntity userEntity = new UserEntity();
-        UserEntity fetchCustomer = customerRepo.findById(id);
+        UserEntity fetchCustomer = userRepo.findById(id);
         if(fetchCustomer!=null) {
             BeanUtils.copyProperties(fetchCustomer,userEntity);
             userEntity.setUpdateDate(LocalDate.now());
@@ -71,7 +72,7 @@ public class UserServiceImpl implements IUserService {
             userEntity.setLastName(userDTO.getLastName());
             userEntity.setKyc(userDTO.getKyc());
             userEntity.setDob(userDTO.getDob());
-            customerRepo.save(userEntity);
+            userRepo.save(userEntity);
             jmsUtil.sendMail(fetchCustomer.getEmailId(),"Book Store App profile Updated","Dear "+userEntity.getFirstName()+" , Your Profile is Updated Successfully!!!");
             return true;
         }
@@ -80,9 +81,9 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean deleteCustomer(long id) {
-        UserEntity userEntity = customerRepo.findById(id);
+        UserEntity userEntity = userRepo.findById(id);
         if(userEntity!=null) {
-            customerRepo.delete(userEntity);
+            userRepo.delete(userEntity);
             return true;
         } else {
             throw new UserNotFoundException("Customer with Given ID not Found.",HttpStatus.NOT_FOUND);
@@ -95,7 +96,7 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public List<UserEntity> readAllCustomers() {
-        List<UserEntity> userEntityList = customerRepo.findAll();
+        List<UserEntity> userEntityList = userRepo.findAll();
         if(userEntityList!=null) {
             return userEntityList;
         }else {
@@ -110,7 +111,7 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public boolean isVerifiedUser(String token) {
-        customerRepo.verifyUser(token);
+        userRepo.verifyUser(token);
         return true;
     }
 
@@ -122,7 +123,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserLoginInfo login(LoginDTO loginDTO) {
         //Get Customer Data with given Login Credential
-        Optional<UserEntity> fetchCustEntity = customerRepo.findUserEntityByUsername(loginDTO.getUsername());
+        Optional<UserEntity> fetchCustEntity = userRepo.findUserEntityByUsername(loginDTO.getUsername());
         //Check if User available or not by Username
         if(fetchCustEntity.isPresent()) {
             //if username exist then check for Password match with passwordencoder
@@ -145,5 +146,16 @@ public class UserServiceImpl implements IUserService {
         throw new UserNotFoundException(Util.USER_NOT_FOUND_EXCEPTION_MESSAGE,HttpStatus.NOT_FOUND);
     }
 
+    UserEntity getAuthenticateUserWithRoleUser(String token)
+            throws UserAuthenticationException,UserNotFoundException {
+        UserEntity fetchUser = userRepo.findUserEntityByUsername(jwtTokenUtil.getUsername(token)).get();
+        if(fetchUser!=null) {
+            if(fetchUser.getRole().contains(Util.ROLE_USER)){
+                return fetchUser;
+            }
+            throw new UserAuthenticationException("User is Not Autherized for the Operation.",HttpStatus.UNAUTHORIZED);
+        }
+        throw new UserNotFoundException(Util.USER_NOT_FOUND_EXCEPTION_MESSAGE,HttpStatus.NOT_FOUND);
+    }
 
 }

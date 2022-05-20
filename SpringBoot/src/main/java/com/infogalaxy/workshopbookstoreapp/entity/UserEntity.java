@@ -1,5 +1,6 @@
 package com.infogalaxy.workshopbookstoreapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.infogalaxy.workshopbookstoreapp.dto.UserDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -59,6 +61,11 @@ public class UserEntity {
     private String verificationCode;
     private LocalDate purchaseDate;
     private LocalDate expiryDate;
+
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "users_books_mappings",joinColumns = {@JoinColumn(name = "id")}, inverseJoinColumns = {@JoinColumn(name = "book_id")})
+    private List<UserBookEntity> booksList;
 
     public UserEntity(UserDTO customerRegisterDTO) {
         this.firstName = customerRegisterDTO.getFirstName();

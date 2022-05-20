@@ -1,7 +1,7 @@
 package com.infogalaxy.workshopbookstoreapp.service;
 
 import com.infogalaxy.workshopbookstoreapp.dto.BookDTO;
-import com.infogalaxy.workshopbookstoreapp.entity.BookEntity;
+import com.infogalaxy.workshopbookstoreapp.entity.AdminBookEntity;
 
 import java.util.List;
 
@@ -24,5 +24,7 @@ public interface IBookService {
      * @param token
      * @return
      */
-    List<BookEntity> getAllBooks(String token);
+    List<AdminBookEntity> getAllBooks(String token);
+
+    AdminBookEntity getBookById(long bookId);
 }

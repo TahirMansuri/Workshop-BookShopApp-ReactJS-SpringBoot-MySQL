@@ -2,6 +2,8 @@ package com.infogalaxy.workshopbookstoreapp.utility;
 
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -10,7 +12,7 @@ public class Util {
 
     public static final String USER_NOT_FOUND_EXCEPTION_MESSAGE = "Sorry... User Not Found!";
     public static final String ROLE_ADMIN = "admin";
-    private static final String ROLE_USER = "user";
+    public static final String ROLE_USER = "user";
 
     /***
      * This function generate teh 6 Digit random OTP number
@@ -27,4 +29,9 @@ public class Util {
     public static String randomIdGenerator() {
         return UUID.randomUUID().toString();
     }
+
+    public static String currentDateTime() {
+        return LocalDateTime.now ().format (DateTimeFormatter.ofPattern ("yyyy-MM-dd HH:mm:ss"));
+    }
+
 }
