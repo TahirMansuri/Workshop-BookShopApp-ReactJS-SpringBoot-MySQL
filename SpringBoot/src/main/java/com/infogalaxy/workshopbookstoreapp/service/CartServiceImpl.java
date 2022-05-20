@@ -11,7 +11,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author InfoGalaxy
@@ -68,6 +70,15 @@ public class CartServiceImpl implements ICartService{
         userEntity.getBooksList().remove(userBookEntity);
         userBookRepo.saveAndFlush(userBookEntity);
         return false;
+    }
+
+    @Override
+    public List<UserBookEntity> getCartList(String token) {
+        return userService.getAuthenticateUserWithRoleUser(token)
+                .getBooksList()
+                .stream()
+                .filter(UserBookEntity::isAddedToCart)
+                .collect(Collectors.toList());
     }
 
     /***

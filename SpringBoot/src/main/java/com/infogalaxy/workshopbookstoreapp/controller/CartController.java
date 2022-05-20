@@ -25,6 +25,12 @@ public class CartController {
         return "<h1> Welcome to Book Store App - Cart Module </h1>";
     }
 
+    /***
+     *
+     * @param token
+     * @param bookId
+     * @return
+     */
     @PostMapping("/cart")
     public ResponseEntity<Response> addOrRemoveFromCart(@RequestHeader("token") String token, @RequestParam("serialNumber") long bookId) {
         boolean isBookAddedToCart = cartService.isBookAddedToCart(token,bookId);
@@ -32,5 +38,10 @@ public class CartController {
             return new ResponseEntity<Response>(new Response("Book Added to Cart.",200), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Response("Book Removed from Cart",202),HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/cart")
+    public ResponseEntity<Response> getCartList(@RequestHeader("token") String token) {
+        return new ResponseEntity<>(new Response("Cart List :",HttpStatus.OK,cartService.getCartList(token)),HttpStatus.OK);
     }
 }
