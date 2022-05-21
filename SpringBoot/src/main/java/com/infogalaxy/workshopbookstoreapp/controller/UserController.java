@@ -94,4 +94,20 @@ public class UserController {
         }
         return new ResponseEntity<>(new LoginResponse("Check Your Mail for Verification", 203, userLoginInfo),HttpStatus.NON_AUTHORITATIVE_INFORMATION);
     }
+
+    /***
+     * Verification of User by OTP
+     * @param otp
+     * @return
+     */
+    @RequestMapping("/verification/{otp}")
+    public String verifyUser(@PathVariable("otp") String otp) {
+        if(customerService.isVerifiedUser(otp)){
+            return "<h1>Congratulations!!! You are verified Succesfully!!!.</h1>";
+            //return new ResponseEntity<>(new Response("Congratulations!!! You are Succesfully Verified!!!",201),HttpStatus.OK);
+        } else {
+            return "<h1>Sorry. OTP Invalid</h1>";
+            //return new ResponseEntity<>(new Response("Invalid OTP Provided",406),HttpStatus.UNAUTHORIZED);
+        }
+    }
 }

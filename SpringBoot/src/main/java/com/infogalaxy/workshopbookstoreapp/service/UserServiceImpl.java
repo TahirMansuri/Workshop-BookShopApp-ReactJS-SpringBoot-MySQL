@@ -53,7 +53,8 @@ public class UserServiceImpl implements IUserService {
 
             Optional<UserEntity> fetchCustData = userRepo.findUserEntityByUsername(userEntity.getUsername());
             if(fetchCustData.isPresent()) {
-                jmsUtil.sendMail(userDTO.getEmailId(),"Verification Code for Book Store App","Hello <b>"+userDTO.getFirstName()+"</b> , Verification Code for Your Book Store App is : <h1><font color=red>"+fetchCustData.get().getVerificationCode()+"</font></h1>");
+                jmsUtil.sendMail(userDTO.getEmailId(),"Verification Code for Book Store App","Hello <b>"+userDTO.getFirstName()+"</b> , Verification Code for Your Book Store App is : <h1><font color=red>"+fetchCustData.get().getVerificationCode()+"</font></h1>"
+                        +"<br>Please Click On below link and Verify the Account. <a href="+Util.VERIFICATION_LINK+"/"+fetchCustData.get().getVerificationCode()+">Click Here.</a>");
                 return true;
             }
             throw new UserNotFoundException(Util.USER_NOT_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND);
@@ -105,7 +106,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     /***
-     *
+     * This functionality Verify the User and Set Verify as True if OTP match
      * @param token
      * @return
      */

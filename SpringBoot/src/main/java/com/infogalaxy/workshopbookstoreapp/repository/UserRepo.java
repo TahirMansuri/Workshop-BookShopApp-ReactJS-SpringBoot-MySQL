@@ -18,6 +18,6 @@ public interface UserRepo extends JpaRepository<UserEntity, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = " update userdata set verify = true where username =  ? ", nativeQuery = true)
+    @Query(value = " update userdata set verify = 1 where verification_code =  ? ", nativeQuery = true)
     void verifyUser(String username);
 }

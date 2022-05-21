@@ -23,13 +23,38 @@ public interface IUserService {
      */
     boolean addCustomer(UserDTO customerRegisterDTO);
 
+    /***
+     * Service to Update User Data
+     * @param customerRegisterDTO
+     * @param id
+     * @return
+     */
     boolean updateCustomer(UserDTO customerRegisterDTO, long id);
 
+    /***
+     * Service to Delete User from System
+     * @param id
+     * @return
+     */
     boolean deleteCustomer(long id);
 
+    /***
+     * Service to List all available user to system
+     * @return
+     */
     List<UserEntity> readAllCustomers();
 
+    /***
+     * Service to Verify User by OTP
+     * @param token
+     * @return
+     */
     boolean isVerifiedUser(String token);
 
+    /***
+     * Service to Perform User Login by Username and Password
+     * @param loginDTO
+     * @return
+     */
     UserLoginInfo login(LoginDTO loginDTO);
 }
