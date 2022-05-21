@@ -4,6 +4,8 @@ import com.infogalaxy.workshopbookstoreapp.dto.BookDTO;
 import com.infogalaxy.workshopbookstoreapp.entity.AdminBookEntity;
 import com.infogalaxy.workshopbookstoreapp.entity.UserEntity;
 import com.infogalaxy.workshopbookstoreapp.exception.BookNotFoundException;
+import com.infogalaxy.workshopbookstoreapp.exception.BookStoreAppException;
+import com.infogalaxy.workshopbookstoreapp.exception.UserAuthenticationException;
 import com.infogalaxy.workshopbookstoreapp.exception.UserNotFoundException;
 import com.infogalaxy.workshopbookstoreapp.repository.BookRepo;
 import com.infogalaxy.workshopbookstoreapp.repository.UserRepo;
@@ -69,11 +71,22 @@ public class BookServiceImpl implements IBookService{
         return bookRepo.findAll();
     }
 
+    /***
+     * This funsctionality access AdminBookEntity by Book Id
+     * @param bookId
+     * @return
+     */
     @Override
     public AdminBookEntity getBookById(long bookId) {
         return bookRepo.findById(bookId).get();
     }
 
+    /***
+     * This functionality check for Valid Book by Book Id
+     * @param bookId
+     * @return
+     * @throws BookNotFoundException
+     */
     Optional<AdminBookEntity> isValidBook(long bookId) throws BookNotFoundException {
         Optional<AdminBookEntity> fetchBook = bookRepo.findById(bookId);
         if(fetchBook.isPresent()) {
@@ -82,5 +95,25 @@ public class BookServiceImpl implements IBookService{
         throw new BookNotFoundException("Book with Given ID Not Availabel",HttpStatus.NOT_FOUND);
     }
 
+    /***
+     * This Funstionality Delete the Book from Store only by validating Admin Token
+     * @param bookId
+     * @param token
+     * @return
+     */
+    @Override
+    public boolean isRemovedFromStoreByAdmin(long bookId, String token) throws BookStoreAppException {
+        if(isUserAdmin(token)) {
+            Optional<AdminBookEntity> adminBookEntity = isValidBook(bookId);
+            if(!adminBookEntity.get().isRemoved()) {
+                adminBookEntity.get().setRemoved(true);
+                adminBookEntity.get().setUpdateDate(LocalDate.now());
+                bookRepo.save(adminBookEntity.get());
+                return true;
+            }
+            return false;
+        }
+        throw new UserAuthenticationException("This user not Autherized as Admin",HttpStatus.UNAUTHORIZED);
+    }
 
 }

@@ -35,6 +35,8 @@ public class AdminBookEntity {
     private int availableQuantity;
 
     private boolean isAdmin;
+    private boolean isRemoved;
+    private boolean isOutOfStock;
 
     private LocalDate addDate;
     private LocalDate updateDate;

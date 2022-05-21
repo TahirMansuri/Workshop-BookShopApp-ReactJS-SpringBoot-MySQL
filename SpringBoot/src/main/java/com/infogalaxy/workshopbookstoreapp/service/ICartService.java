@@ -1,6 +1,7 @@
 package com.infogalaxy.workshopbookstoreapp.service;
 
 import com.infogalaxy.workshopbookstoreapp.entity.UserBookEntity;
+import com.infogalaxy.workshopbookstoreapp.responses.Response;
 
 import java.util.List;
 
@@ -10,7 +11,11 @@ import java.util.List;
  * @created 20-05-2022
  */
 public interface ICartService {
+    //Function for Adding and Removing Book in/from User Cart
     boolean isBookAddedToCart(String token, long bookId);
 
+    //Function to get All Cart List Books
     List<UserBookEntity> getCartList(String token);
+
+    Response isUserBookAddedToWishList(String token, long bookId);
 }

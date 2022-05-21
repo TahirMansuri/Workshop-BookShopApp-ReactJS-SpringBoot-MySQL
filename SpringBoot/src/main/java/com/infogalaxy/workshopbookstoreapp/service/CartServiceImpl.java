@@ -3,12 +3,16 @@ package com.infogalaxy.workshopbookstoreapp.service;
 import com.infogalaxy.workshopbookstoreapp.entity.AdminBookEntity;
 import com.infogalaxy.workshopbookstoreapp.entity.UserBookEntity;
 import com.infogalaxy.workshopbookstoreapp.entity.UserEntity;
+import com.infogalaxy.workshopbookstoreapp.exception.BookNotFoundException;
 import com.infogalaxy.workshopbookstoreapp.repository.BookRepo;
 import com.infogalaxy.workshopbookstoreapp.repository.UserBookRepo;
 import com.infogalaxy.workshopbookstoreapp.repository.UserRepo;
+import com.infogalaxy.workshopbookstoreapp.responses.Response;
+import com.infogalaxy.workshopbookstoreapp.security.JWTTokenUtil;
 import com.infogalaxy.workshopbookstoreapp.utility.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +41,9 @@ public class CartServiceImpl implements ICartService{
 
     @Autowired
     UserServiceImpl userService;
+
+    @Autowired
+    JWTTokenUtil jwtTokenUtil;
 
     /***
      * This functionality Add Selected Book to User Cart
@@ -79,6 +86,27 @@ public class CartServiceImpl implements ICartService{
                 .stream()
                 .filter(UserBookEntity::isAddedToCart)
                 .collect(Collectors.toList());
+    }
+
+    /***
+     * This functionality used for Adding Book to Wish List for User
+     * @param token
+     * @param bookId
+     */
+    @Override
+    public Response isUserBookAddedToWishList(String token, long bookId) {
+       Optional<AdminBookEntity> adminBookEntity = bookService.isValidBook(bookId);
+       UserEntity userEntity = userService.getAuthenticateUserWithRoleUser(token);
+       UserBookEntity userBookEntity = checkAndCreateNewBookForUserAndCopyContent(adminBookEntity.get().getBookCode(),adminBookEntity.get());
+       if(!userBookEntity.isAddedToWishList()){
+            userBookEntity.setAddedToWishList(true);
+            userBookEntity.setUpdateDateTime(Util.currentDateTime());
+            userEntity.getBooksList().add(userBookEntity);
+            userBookRepo.saveAndFlush(userBookEntity);
+            return new Response("Book Added to WishList",201);
+       } else {
+           return new Response("Book Not Added to WishList",HttpStatus.NOT_FOUND);
+       }
     }
 
     /***

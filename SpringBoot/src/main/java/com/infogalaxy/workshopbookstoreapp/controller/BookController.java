@@ -52,4 +52,20 @@ public class BookController {
     public ResponseEntity<Response> get(@RequestHeader("token") String token) {
         return new ResponseEntity<Response>(new Response("BookList",HttpStatus.OK,bookService.getAllBooks(token)),HttpStatus.OK);
     }
+
+    /***
+     *
+     * @param token
+     * @param bookId
+     * @return
+     */
+    @DeleteMapping("/delete/{bookId}")
+    public ResponseEntity<Response> delete(@RequestHeader("token") String token,@PathVariable long bookId) {
+        boolean isRemoved = bookService.isRemovedFromStoreByAdmin(bookId,token);
+        if(isRemoved) {
+            return new ResponseEntity<>(new Response("Book Removed Succesfully!!!",201), HttpStatus.GONE);
+        } else {
+            return new ResponseEntity<>(new Response("Book Already Removed From Store",HttpStatus.NOT_FOUND),HttpStatus.NOT_FOUND);
+        }
+    }
 }

@@ -44,4 +44,9 @@ public class CartController {
     public ResponseEntity<Response> getCartList(@RequestHeader("token") String token) {
         return new ResponseEntity<>(new Response("Cart List :",HttpStatus.OK,cartService.getCartList(token)),HttpStatus.OK);
     }
+
+    @PutMapping("/wishlist")
+    public ResponseEntity<Response> addOrRemoveFromWishList(@RequestHeader String token,@RequestParam("bookId") long bookId) {
+        return new ResponseEntity<Response>(cartService.isUserBookAddedToWishList(token,bookId),HttpStatus.OK);
+    }
 }

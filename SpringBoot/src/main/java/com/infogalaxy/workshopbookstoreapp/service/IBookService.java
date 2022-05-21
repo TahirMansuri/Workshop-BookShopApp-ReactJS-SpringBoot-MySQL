@@ -26,5 +26,18 @@ public interface IBookService {
      */
     List<AdminBookEntity> getAllBooks(String token);
 
+    /***
+     * This function Get Book Data using Book Id
+     * @param bookId
+     * @return
+     */
     AdminBookEntity getBookById(long bookId);
+
+    /***
+     * This function delete book from store by Admin only
+     * @param bookId
+     * @param token
+     * @return
+     */
+    boolean isRemovedFromStoreByAdmin(long bookId, String token);
 }
