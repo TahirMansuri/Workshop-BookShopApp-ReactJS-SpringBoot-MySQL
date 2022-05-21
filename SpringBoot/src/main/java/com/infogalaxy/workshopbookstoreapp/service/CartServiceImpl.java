@@ -108,7 +108,6 @@ public class CartServiceImpl implements ICartService{
            return new Response("Book Not Added to WishList",HttpStatus.NOT_FOUND);
        }
     }
-
     /***
      * This fundtionality check for the Availability of Selected Book in Cart
      * If the Book is already in Cart then it return userBookEntity
@@ -127,4 +126,19 @@ public class CartServiceImpl implements ICartService{
         newUserBookEntity.setBookId(0);
         return newUserBookEntity;
     }
+
+    /***
+     * Fundtionlity add the book to user wishlist
+     * @param token
+     * @return
+     */
+    @Override
+    public List<UserBookEntity> getWishList(String token) {
+        return userService.getAuthenticateUserWithRoleUser(token)
+                .getBooksList()
+                .stream()
+                .filter(UserBookEntity :: isAddedToWishList)
+                .collect(Collectors.toList());
+    }
+
 }

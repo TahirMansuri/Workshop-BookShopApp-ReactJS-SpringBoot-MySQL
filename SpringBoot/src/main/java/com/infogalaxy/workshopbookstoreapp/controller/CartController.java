@@ -40,13 +40,34 @@ public class CartController {
         return new ResponseEntity<>(new Response("Book Removed from Cart",202),HttpStatus.ACCEPTED);
     }
 
+    /***
+     *
+     * @param token
+     * @return
+     */
     @GetMapping("/cart")
     public ResponseEntity<Response> getCartList(@RequestHeader("token") String token) {
         return new ResponseEntity<>(new Response("Cart List :",HttpStatus.OK,cartService.getCartList(token)),HttpStatus.OK);
     }
 
+    /***
+     *
+     * @param token
+     * @param bookId
+     * @return
+     */
     @PutMapping("/wishlist")
-    public ResponseEntity<Response> addOrRemoveFromWishList(@RequestHeader String token,@RequestParam("bookId") long bookId) {
+    public ResponseEntity<Response> addOrRemoveFromWishList(@RequestHeader("token") String token,@RequestParam("bookId") long bookId) {
         return new ResponseEntity<Response>(cartService.isUserBookAddedToWishList(token,bookId),HttpStatus.OK);
+    }
+
+    /***
+     *
+     * @param token
+     * @return
+     */
+    @GetMapping("/wishlist")
+    public ResponseEntity<Response> getWishList(@RequestHeader("token") String token) {
+        return new ResponseEntity<>(new Response("WishList :",HttpStatus.OK,cartService.getWishList(token)),HttpStatus.OK);
     }
 }

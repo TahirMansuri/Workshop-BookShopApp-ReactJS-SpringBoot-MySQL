@@ -17,5 +17,9 @@ public interface ICartService {
     //Function to get All Cart List Books
     List<UserBookEntity> getCartList(String token);
 
+    //Fundtion to Adding Book in Wish List
     Response isUserBookAddedToWishList(String token, long bookId);
+
+    //Function to Get List of Wish List Books
+    List<UserBookEntity> getWishList(String token);
 }
