@@ -11,5 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BookRepo extends JpaRepository<AdminBookEntity,Long> {
     //AdminBookEntity findAdminBookEntityByCode(long bookId);
     AdminBookEntity findAdminBookEntityByBookCode(long bookCode);
+
+    AdminBookEntity findOneByBookCode(String bookCode);
     //AdminBookEntity findAdminBookEntityById(long bookId);
 }

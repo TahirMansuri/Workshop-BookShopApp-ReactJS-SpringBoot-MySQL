@@ -22,4 +22,7 @@ public interface ICartService {
 
     //Function to Get List of Wish List Books
     List<UserBookEntity> getWishList(String token);
+
+    //Function to Place Order
+    String placeOrder(String token,List<UserBookEntity> orderBooks);
 }

@@ -1,5 +1,6 @@
 package com.infogalaxy.workshopbookstoreapp.controller;
 
+import com.infogalaxy.workshopbookstoreapp.entity.UserBookEntity;
 import com.infogalaxy.workshopbookstoreapp.responses.Response;
 import com.infogalaxy.workshopbookstoreapp.service.CartServiceImpl;
 import org.apache.catalina.filters.RestCsrfPreventionFilter;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author InfoGalaxy
@@ -69,5 +72,21 @@ public class CartController {
     @GetMapping("/wishlist")
     public ResponseEntity<Response> getWishList(@RequestHeader("token") String token) {
         return new ResponseEntity<>(new Response("WishList :",HttpStatus.OK,cartService.getWishList(token)),HttpStatus.OK);
+    }
+
+    /***
+     *
+     * @param token
+     * @param orderBooks
+     * @return
+     */
+    @PostMapping("/checkout")
+    public ResponseEntity<Response> placeOrder(@RequestHeader("token") String token, @RequestBody List<UserBookEntity> orderBooks) {
+        String orderNumber = cartService.placeOrder(token,orderBooks);
+        if(orderNumber.isEmpty()) {
+            return new ResponseEntity<>(new Response("Error in Processing Order",HttpStatus.BAD_REQUEST),HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<Response>(new Response("Order Places Succesfully.",HttpStatus.OK,orderNumber),HttpStatus.BAD_REQUEST);
+        }
     }
 }

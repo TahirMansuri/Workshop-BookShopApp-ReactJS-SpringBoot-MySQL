@@ -9,12 +9,15 @@ import com.infogalaxy.workshopbookstoreapp.repository.UserBookRepo;
 import com.infogalaxy.workshopbookstoreapp.repository.UserRepo;
 import com.infogalaxy.workshopbookstoreapp.responses.Response;
 import com.infogalaxy.workshopbookstoreapp.security.JWTTokenUtil;
+import com.infogalaxy.workshopbookstoreapp.utility.JMSUtil;
 import com.infogalaxy.workshopbookstoreapp.utility.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +47,9 @@ public class CartServiceImpl implements ICartService{
 
     @Autowired
     JWTTokenUtil jwtTokenUtil;
+
+    @Autowired
+    JMSUtil jmsUtil;
 
     /***
      * This functionality Add Selected Book to User Cart
@@ -139,6 +145,63 @@ public class CartServiceImpl implements ICartService{
                 .stream()
                 .filter(UserBookEntity :: isAddedToWishList)
                 .collect(Collectors.toList());
+    }
+
+    /***
+     * This functionality check for ordered book statu sin admin side then
+     * check for quantity, status and then make order
+     * @param token
+     * @param orderBooks
+     * @return
+     */
+    @Override
+    public String placeOrder(String token, List<UserBookEntity> orderBooks) {
+        UserEntity userEntity = userService.getAuthenticateUserWithRoleUser(token);
+        List<AdminBookEntity> adminBookEntityList = new ArrayList<>();
+        for(UserBookEntity userBookEntity : orderBooks) {
+            AdminBookEntity adminBookEntity = bookRepo.findOneByBookCode(userBookEntity.getBookCode());
+            if(adminBookEntity!=null) {
+                adminBookEntityList.add(adminBookEntity);
+            } else {
+                throw new BookNotFoundException("Book is Not Available",HttpStatus.NOT_FOUND);
+            }
+        }
+        String orderNumber = Util.randomIdGenerator();
+        for(AdminBookEntity adminBookEntity : adminBookEntityList) {
+            for(UserBookEntity userBookEntity : orderBooks) {
+                if(adminBookEntity.getBookCode().equals(userBookEntity.getBookCode())) {
+                    if(adminBookEntity.getAvailableQuantity() == userBookEntity.getPurchaseQuantity()) {
+                        adminBookEntity.setAvailableQuantity(0);
+                        adminBookEntity.setOutOfStock(true);
+                    } else {
+                        adminBookEntity.setAvailableQuantity(adminBookEntity.getAvailableQuantity()-userBookEntity.getPurchaseQuantity());
+                    }
+                    userBookEntity.setCheckedOut(true);
+                    userBookEntity.setAddedToCart(false);
+                    userBookEntity.setOrderNumber(orderNumber);
+                    userBookEntity.setCheckoutDateTime(Util.currentDateTime());
+                    adminBookEntity.setUpdateDate(LocalDate.now());
+                    userBookEntity.setUpdateDateTime(Util.currentDateTime());
+
+                    userBookRepo.saveAndFlush(userBookEntity);
+                    bookRepo.saveAndFlush(adminBookEntity);
+                }
+            }
+        }
+
+        String subject = "Order Confirmation Mail, Order number : " + orderNumber;
+        String bodyContent = "";
+        for (UserBookEntity book : orderBooks) {
+            String bookOrderInfo = "Book code : " + book.getBookCode ()
+                    + ",Title : " + book.getName ()
+                    + ",Price : " + book.getPrice ()
+                    + ",Quantity : " + book.getPurchaseQuantity()
+                    + ",Total : " + book.getPrice () * book.getPurchaseQuantity() + ".\n";
+            bodyContent += bookOrderInfo;
+        }
+
+        jmsUtil.sendMail(userEntity.getEmailId(),subject,bodyContent);
+        return orderNumber;
     }
 
 }

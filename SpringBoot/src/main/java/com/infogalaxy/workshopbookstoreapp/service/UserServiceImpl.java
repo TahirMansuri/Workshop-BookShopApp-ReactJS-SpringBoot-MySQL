@@ -53,7 +53,7 @@ public class UserServiceImpl implements IUserService {
 
             Optional<UserEntity> fetchCustData = userRepo.findUserEntityByUsername(userEntity.getUsername());
             if(fetchCustData.isPresent()) {
-                jmsUtil.sendMail(userDTO.getEmailId(),"Verification Code for Book Store App","Hello "+userDTO.getFirstName()+", Verification Code for Your Book Store App is : "+fetchCustData.get().getVerificationCode()+"");
+                jmsUtil.sendMail(userDTO.getEmailId(),"Verification Code for Book Store App","Hello <b>"+userDTO.getFirstName()+"</b> , Verification Code for Your Book Store App is : <h1><font color=red>"+fetchCustData.get().getVerificationCode()+"</font></h1>");
                 return true;
             }
             throw new UserNotFoundException(Util.USER_NOT_FOUND_EXCEPTION_MESSAGE, HttpStatus.NOT_FOUND);
@@ -73,7 +73,7 @@ public class UserServiceImpl implements IUserService {
             userEntity.setKyc(userDTO.getKyc());
             userEntity.setDob(userDTO.getDob());
             userRepo.save(userEntity);
-            jmsUtil.sendMail(fetchCustomer.getEmailId(),"Book Store App profile Updated","Dear "+userEntity.getFirstName()+" , Your Profile is Updated Successfully!!!");
+            jmsUtil.sendMail(fetchCustomer.getEmailId(),"Book Store App profile Updated","Dear <b>"+userEntity.getFirstName()+"</b> , Your Profile is <b><font color=blue>Updated Successfully!!!</font></b>");
             return true;
         }
         return false;
@@ -135,7 +135,7 @@ public class UserServiceImpl implements IUserService {
                     return new UserLoginInfo(createdToken,fetchCustEntity.get().getFirstName(),fetchCustEntity.get().getRole());
                 }
                 //if User not verified then send email for verification status
-                jmsUtil.sendMail(fetchCustEntity.get().getEmailId(),"Verification Status","Dear "+fetchCustEntity.get().getFirstName()+", Please Verify the Account First Then Login again.");
+                jmsUtil.sendMail(fetchCustEntity.get().getEmailId(),"Verification Status","Dear "+fetchCustEntity.get().getFirstName()+", <b><font color=red>Please Verify the Account First Then Login again.</font></b>");
 
                 return new UserLoginInfo("",fetchCustEntity.get().getFirstName());
             }
