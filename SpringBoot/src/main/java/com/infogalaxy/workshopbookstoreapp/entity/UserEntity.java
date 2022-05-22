@@ -11,10 +11,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @Entity
 @Table(name = "userdata")
 public class UserEntity {
@@ -66,6 +66,15 @@ public class UserEntity {
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_books_mappings",joinColumns = {@JoinColumn(name = "id")}, inverseJoinColumns = {@JoinColumn(name = "book_id")})
     private List<UserBookEntity> booksList;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id")
+    private List<AddressEntity> addressEntityList;
+
+    public UserEntity() {
+        this.booksList = new ArrayList<>();
+        this.addressEntityList = new ArrayList<>();
+    }
 
     public UserEntity(UserDTO customerRegisterDTO) {
         this.firstName = customerRegisterDTO.getFirstName();

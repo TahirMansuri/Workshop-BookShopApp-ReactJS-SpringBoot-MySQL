@@ -1,7 +1,9 @@
 package com.infogalaxy.workshopbookstoreapp.service;
 
+import com.infogalaxy.workshopbookstoreapp.dto.AddressDTO;
 import com.infogalaxy.workshopbookstoreapp.dto.UserDTO;
 import com.infogalaxy.workshopbookstoreapp.dto.LoginDTO;
+import com.infogalaxy.workshopbookstoreapp.entity.AddressEntity;
 import com.infogalaxy.workshopbookstoreapp.entity.UserEntity;
 
 import java.util.List;
@@ -57,4 +59,19 @@ public interface IUserService {
      * @return
      */
     UserLoginInfo login(LoginDTO loginDTO);
+
+    /***
+     * Service to Add Address for User
+     * @param addressDTO
+     * @param token
+     * @return
+     */
+    boolean isUserAddressAdded(AddressDTO addressDTO,String token);
+
+    /***
+     * Service to Get All Available address of Login User
+     * @param token
+     * @return
+     */
+    List<AddressEntity> getUserAllAddress(String token);
 }

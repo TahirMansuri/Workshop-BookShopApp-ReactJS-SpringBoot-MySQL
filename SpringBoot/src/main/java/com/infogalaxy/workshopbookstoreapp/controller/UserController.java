@@ -1,5 +1,6 @@
 package com.infogalaxy.workshopbookstoreapp.controller;
 
+import com.infogalaxy.workshopbookstoreapp.dto.AddressDTO;
 import com.infogalaxy.workshopbookstoreapp.dto.UserDTO;
 import com.infogalaxy.workshopbookstoreapp.dto.LoginDTO;
 import com.infogalaxy.workshopbookstoreapp.entity.UserEntity;
@@ -109,5 +110,31 @@ public class UserController {
             return "<h1>Sorry. OTP Invalid</h1>";
             //return new ResponseEntity<>(new Response("Invalid OTP Provided",406),HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    /***
+     * Add User Address
+     * @param addressDTO
+     * @param token
+     * @return
+     */
+    @PostMapping("/address/add")
+    public ResponseEntity<Response> addAddress(@RequestBody AddressDTO addressDTO,@RequestHeader("token") String token) {
+        boolean isAddressAdded = customerService.isUserAddressAdded(addressDTO,token);
+        if(isAddressAdded) {
+            return new ResponseEntity<>(new Response("Address Added Succesfully!!!",201),HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(new Response("Problem in Adding Address",HttpStatus.BAD_REQUEST),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /***
+     * API to get All Available Address of User
+     * @param token
+     * @return
+     */
+    @GetMapping("/address/get")
+    public ResponseEntity<Response> getAllUserAddress(@RequestHeader("token") String token) {
+        return new ResponseEntity<>(new Response("User Addresses :",HttpStatus.OK,customerService.getUserAllAddress(token)),HttpStatus.OK);
     }
 }

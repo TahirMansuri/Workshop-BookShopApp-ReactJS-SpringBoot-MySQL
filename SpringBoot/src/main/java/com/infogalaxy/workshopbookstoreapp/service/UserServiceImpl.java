@@ -1,11 +1,14 @@
 package com.infogalaxy.workshopbookstoreapp.service;
 
+import com.infogalaxy.workshopbookstoreapp.dto.AddressDTO;
 import com.infogalaxy.workshopbookstoreapp.dto.UserDTO;
 import com.infogalaxy.workshopbookstoreapp.dto.LoginDTO;
+import com.infogalaxy.workshopbookstoreapp.entity.AddressEntity;
 import com.infogalaxy.workshopbookstoreapp.entity.UserEntity;
 import com.infogalaxy.workshopbookstoreapp.exception.InvalidCredentialException;
 import com.infogalaxy.workshopbookstoreapp.exception.UserAuthenticationException;
 import com.infogalaxy.workshopbookstoreapp.exception.UserNotFoundException;
+import com.infogalaxy.workshopbookstoreapp.repository.AddressRepo;
 import com.infogalaxy.workshopbookstoreapp.repository.UserRepo;
 import com.infogalaxy.workshopbookstoreapp.security.JWTTokenUtil;
 import com.infogalaxy.workshopbookstoreapp.utility.JMSUtil;
@@ -35,6 +38,10 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     JWTTokenUtil jwtTokenUtil;
+
+    @Autowired
+    AddressRepo addressRepo;
+
     /***
      * Service Implementation for Add Customer to App using BookStoreApp Repository
      * @param userDTO
@@ -147,6 +154,13 @@ public class UserServiceImpl implements IUserService {
         throw new UserNotFoundException(Util.USER_NOT_FOUND_EXCEPTION_MESSAGE,HttpStatus.NOT_FOUND);
     }
 
+    /***
+     * Service to Check for Authentication of User
+     * @param token
+     * @return
+     * @throws UserAuthenticationException
+     * @throws UserNotFoundException
+     */
     UserEntity getAuthenticateUserWithRoleUser(String token)
             throws UserAuthenticationException,UserNotFoundException {
         UserEntity fetchUser = userRepo.findUserEntityByUsername(jwtTokenUtil.getUsername(token)).get();
@@ -157,6 +171,32 @@ public class UserServiceImpl implements IUserService {
             throw new UserAuthenticationException("User is Not Autherized for the Operation.",HttpStatus.UNAUTHORIZED);
         }
         throw new UserNotFoundException(Util.USER_NOT_FOUND_EXCEPTION_MESSAGE,HttpStatus.NOT_FOUND);
+    }
+
+    /***
+     * Functionality to Add User Address to Store App
+     * @param addressDTO
+     * @param token
+     * @return
+     */
+    @Override
+    public boolean isUserAddressAdded(AddressDTO addressDTO, String token) {
+        UserEntity userEntity = getAuthenticateUserWithRoleUser(token);
+        AddressEntity addressEntity = new AddressEntity();
+        BeanUtils.copyProperties(addressDTO,addressEntity);
+        userEntity.getAddressEntityList().add(addressEntity);
+        addressRepo.saveAndFlush(addressEntity);
+        return true;
+    }
+
+    /***
+     * Functionality to Get All User Address from Store App
+     * @param token
+     * @return
+     */
+    @Override
+    public List<AddressEntity> getUserAllAddress(String token) {
+        return getAuthenticateUserWithRoleUser(token).getAddressEntityList();
     }
 
 }
