@@ -1,0 +1,12 @@
+.signup{
+    margin: 20px auto;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    height: 135vh;
+    font-size: 20px; 
+    font-weight: 700;
+    padding: 30px;
+}
